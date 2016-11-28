@@ -39,6 +39,11 @@ public class CreateTaskFragment extends DialogFragment {
 
     @OnClick(R.id.create_task_button)
     public void onCreateTaskButtonClick() {
+        if (attemptCreateTask()) return;
+        getDialog().dismiss();
+    }
+
+    private boolean attemptCreateTask() {
         boolean cancel = false;
         String title = titleEditText.getText().toString();
         String body = bodyEditText.getText().toString();
@@ -60,10 +65,10 @@ public class CreateTaskFragment extends DialogFragment {
         if (cancel) {
             if (focusView != null)
                 focusView.requestFocus();
-            return;
+            return true;
         }
         onCreateDialogListener.onTaskCreated(title, body, colorSeekBar.getColor());
-        getDialog().dismiss();
+        return false;
     }
 
     @Override
@@ -85,9 +90,7 @@ public class CreateTaskFragment extends DialogFragment {
                 colorChooseTaskView.setBackgroundColor(color);
             }
         });
-
         colorSeekBar.setColorBarValue(0);
-
 
         return view;
     }

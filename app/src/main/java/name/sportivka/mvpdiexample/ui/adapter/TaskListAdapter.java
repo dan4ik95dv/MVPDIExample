@@ -64,6 +64,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     abstract class BaseViewHolder extends RealmViewHolder {
         BaseViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this, itemView);
         }
 
         abstract void clear();
@@ -88,7 +89,6 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
 
         ViewHolderTask(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
         @Override
