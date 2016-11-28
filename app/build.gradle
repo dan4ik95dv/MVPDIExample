@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'realm-android'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://mvnrepository.com/repos/sonatype-releases"}
+    maven { url 'https://github.com/eikaramba/stetho-realm/raw/master/maven-repo' }
+    maven { url "https://jitpack.io" }
+    maven { url "https://clojars.org/repo/" }
+    maven { url "https://repo.commonsware.com.s3.amazonaws.com" }
+}
+
+android {
+    //Fix conflicts
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE.txt'
+        exclude 'APK LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/README.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/MANIFEST.MF'
+    }
+
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+    defaultConfig {
+        applicationId "name.sportivka.mvpdiexample"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    //Android Support
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:cardview-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+
+    //Stuff...=)
+    compile 'com.github.thorbenprimke:realm-recyclerview:0.9.25'
+    compile 'com.github.rtugeek:ColorSeekBar:1.0.2'
+
+    //Debug realm
+    compile 'com.facebook.stetho:stetho:1.3.1'
+    compile 'com.uphyca:stetho_realm:0.9.0'
+
+    //Dagger2
+    compile 'com.google.dagger:dagger:2.7'
+    apt 'com.google.dagger:dagger-compiler:2.7'
+
+    //Butterknife
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    //Unit tests
+    testCompile 'junit:junit:4.12'
+
+    //Functional tests
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+}

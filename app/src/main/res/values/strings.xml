@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Todo list MVP+DI</string>
+    <string name="action_about">About</string>
+    <string name="task_add_msg">Task has been added!</string>
+    <string name="create">Create</string>
+    <string name="title_dialog_create_task">Create a task</string>
+    <string name="completed_tab">Completed</string>
+    <string name="title_hint">Title</string>
+    <string name="body_hint">Body</string>
+    <string name="active_tab">Active</string>
+    <string name="no_tasks">No tasks</string>
+    <string name="task_reopened_msg">Task has been reopened</string>
+    <string name="task_completed_msg">Task has been completed</string>
+    <string name="error_empty_field">Need to fill the field</string>
+    <string name="task_deleted_msg">Task has been deleted!</string>
+</resources>
