@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import name.sportivka.mvpdiexample.BuildConfig;
+import name.sportivka.mvpdiexample.di.component.DaggerAppComponent;
+import name.sportivka.mvpdiexample.di.module.AppModule;
 import name.sportivka.mvpdiexample.util.Constants;
 
 /**
@@ -20,12 +22,23 @@ import name.sportivka.mvpdiexample.util.Constants;
 
 public class App extends Application {
 
+
+    static App self;
+
+    public static App getInstance() {
+        return self;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        self = this;
+
         initDebugTools();
         initRealm();
+
+        DaggerAppComponent.builder().appModule(new AppModule(this)).build();
 
     }
 
@@ -56,6 +69,5 @@ public class App extends Application {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
-
 
 }

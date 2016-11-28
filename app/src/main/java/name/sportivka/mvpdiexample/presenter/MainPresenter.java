@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 
-import java.util.Date;
-import java.util.UUID;
+import javax.inject.Inject;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
+import name.sportivka.mvpdiexample.di.component.presenter.DaggerMainPresenterComponent;
+import name.sportivka.mvpdiexample.di.module.presenter.MainPresenterModule;
+import name.sportivka.mvpdiexample.io.repository.MainRepository;
 import name.sportivka.mvpdiexample.model.Task;
 import name.sportivka.mvpdiexample.ui.adapter.TaskListAdapter;
 import name.sportivka.mvpdiexample.ui.fragment.CreateTaskFragment;
@@ -21,17 +21,17 @@ import name.sportivka.mvpdiexample.ui.view.MainMvpView;
 
 public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.ChangeTaskStatusListener {
 
+    @Inject
+    MainRepository mainRepository;
     private MainMvpView mainMvpView;
     private Context context;
-
     private TaskListAdapter taskListAdapter;
-    private Realm realm;
-    private RealmResults<Task> tasks;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
     private CreateTaskFragment.OnCreateDialogListener createDialogListener;
 
     public MainPresenter(Context context) {
         this.context = context;
+        DaggerMainPresenterComponent.builder().mainPresenterModule(new MainPresenterModule()).build().inject(this);
         attachView((MainMvpView) context);
     }
 
@@ -44,55 +44,33 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
     @Override
     public void detachView() {
         this.mainMvpView = null;
-        realm.close();
-        realm = null;
+        mainRepository.closeRealm();
     }
+
 
     private void init() {
-        initRealm();
-        taskListAdapter = new TaskListAdapter(context, this, realm, tasks, true, true);
+        taskListAdapter = new TaskListAdapter(context, this, mainRepository.getActiveTasks(), true, true);
     }
 
-    private void initRealm() {
-        realm = Realm.getDefaultInstance();
-        getTasks(false);
-    }
-
-
-    private void getTasks(boolean status) {
-        tasks = realm.where(Task.class).equalTo("status", status).findAllSorted("dateCreated", Sort.DESCENDING);
-        if (taskListAdapter != null) {
-            taskListAdapter.updateRealmResults(tasks);
-        }
-    }
 
     private void createTask(final String title, final String body, final int color) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Task task = new Task();
-                task.setId(UUID.randomUUID().toString());
-                task.setDateCreated(new Date());
-                task.setTitle(title);
-                task.setBody(body);
-                task.setColor(color);
-                task.setStatus(false);
-                realm.copyToRealm(task);
-            }
-        });
+        mainRepository.add(title, body, color);
         mainMvpView.taskAdded();
     }
 
     @Override
-    public void statusChanged(boolean status) {
+    public void statusChanged(final boolean status, Task task) {
+        mainRepository.update(task, status);
         mainMvpView.taskStatusChanged(status);
     }
 
     @Override
-    public void taskDelete() {
+    public void taskDelete(int position, RealmResults<Task> realmResults) {
+        mainRepository.remove(realmResults, position);
         mainMvpView.taskDeleted();
     }
 
+    @NonNull
     public TaskListAdapter getTaskListAdapter() {
         return taskListAdapter;
     }
@@ -105,10 +83,10 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
                 public void onTabSelected(TabLayout.Tab tab) {
                     switch (tab.getPosition()) {
                         case 0:
-                            getTasks(false);
+                            taskListAdapter.updateRealmResults(mainRepository.getActiveTasks());
                             break;
                         case 1:
-                            getTasks(true);
+                            taskListAdapter.updateRealmResults(mainRepository.getCompletedTasks());
                             break;
                     }
                 }

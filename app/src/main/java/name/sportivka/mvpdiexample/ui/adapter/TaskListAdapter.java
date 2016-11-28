@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
@@ -24,11 +23,10 @@ import name.sportivka.mvpdiexample.model.Task;
 
 public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskListAdapter.ViewHolderTask> {
     private ChangeTaskStatusListener changeTaskStatusListener;
-    private Realm realm;
 
-    public TaskListAdapter(Context context, ChangeTaskStatusListener changeTaskStatusListener, Realm realm, RealmResults realmResults, boolean automaticUpdate, boolean animateResults) {
+
+    public TaskListAdapter(Context context, ChangeTaskStatusListener changeTaskStatusListener, RealmResults realmResults, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
-        this.realm = realm;
         this.changeTaskStatusListener = changeTaskStatusListener;
     }
 
@@ -51,14 +49,13 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
 
     @Override
     public void onItemSwipedDismiss(int position) {
-        super.onItemSwipedDismiss(position);
-        changeTaskStatusListener.taskDelete();
+        changeTaskStatusListener.taskDelete(position, realmResults);
     }
 
     public interface ChangeTaskStatusListener {
-        void statusChanged(boolean status);
+        void statusChanged(boolean status, Task task);
 
-        void taskDelete();
+        void taskDelete(int position, RealmResults<Task> realmResults);
     }
 
     abstract class BaseViewHolder extends RealmViewHolder {
@@ -111,13 +108,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
             changeStatusButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, final boolean status) {
-                    changeTaskStatusListener.statusChanged(status);
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            task.setStatus(status);
-                        }
-                    });
+                    changeTaskStatusListener.statusChanged(status, task);
                 }
             });
         }

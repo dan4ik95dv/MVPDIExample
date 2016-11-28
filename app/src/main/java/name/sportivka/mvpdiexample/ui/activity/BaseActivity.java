@@ -3,7 +3,6 @@ package name.sportivka.mvpdiexample.ui.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;

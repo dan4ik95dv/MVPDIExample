@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'}
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'io.realm:realm-gradle-plugin:2.2.1'
+    }
+
+    configurations.classpath.exclude group: 'com.android.tools.build', module: 'transform-api'
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
