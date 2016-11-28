@@ -9,14 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import name.sportivka.mvpdiexample.R;
-import name.sportivka.mvpdiexample.di.component.activity.DaggerMainComponent;
-import name.sportivka.mvpdiexample.di.module.activity.MainModule;
 import name.sportivka.mvpdiexample.presenter.MainPresenter;
 import name.sportivka.mvpdiexample.ui.fragment.CreateTaskFragment;
 import name.sportivka.mvpdiexample.ui.view.MainMvpView;
@@ -39,7 +35,6 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @BindView(R.id.tab_layout)
     TabLayout tabLayout;
 
-    @Inject
     MainPresenter mainPresenter;
 
 
@@ -59,9 +54,9 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DaggerMainComponent.builder().mainModule(new MainModule(this)).build().inject(this);
-
         setContentView(R.layout.activity_main);
+
+        mainPresenter = new MainPresenter(this);
 
         setSupportActionBar(toolbar);
         taskList.setAdapter(mainPresenter.getTaskListAdapter());

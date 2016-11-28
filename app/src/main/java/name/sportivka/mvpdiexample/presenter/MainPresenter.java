@@ -4,11 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 
-import javax.inject.Inject;
-
+import io.realm.Realm;
 import io.realm.RealmResults;
-import name.sportivka.mvpdiexample.di.component.presenter.DaggerMainPresenterComponent;
-import name.sportivka.mvpdiexample.di.module.presenter.MainPresenterModule;
 import name.sportivka.mvpdiexample.io.repository.MainRepository;
 import name.sportivka.mvpdiexample.model.Task;
 import name.sportivka.mvpdiexample.ui.adapter.TaskListAdapter;
@@ -21,8 +18,8 @@ import name.sportivka.mvpdiexample.ui.view.MainMvpView;
 
 public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.ChangeTaskStatusListener {
 
-    @Inject
-    MainRepository mainRepository;
+
+    private MainRepository mainRepository;
     private MainMvpView mainMvpView;
     private Context context;
     private TaskListAdapter taskListAdapter;
@@ -31,7 +28,7 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
 
     public MainPresenter(Context context) {
         this.context = context;
-        DaggerMainPresenterComponent.builder().mainPresenterModule(new MainPresenterModule()).build().inject(this);
+        this.mainRepository = new MainRepository(Realm.getDefaultInstance());
         attachView((MainMvpView) context);
     }
 
