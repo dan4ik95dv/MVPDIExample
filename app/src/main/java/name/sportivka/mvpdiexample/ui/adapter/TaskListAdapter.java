@@ -23,10 +23,12 @@ import name.sportivka.mvpdiexample.model.Task;
  */
 
 public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskListAdapter.ViewHolderTask> {
+    //listener для отправки коллбеков в активность.
     private ChangeTaskStatusListener changeTaskStatusListener;
+    //Объект работы  с дб.
     private Realm realm;
 
-    public TaskListAdapter(Context context, ChangeTaskStatusListener changeTaskStatusListener, Realm realm, RealmResults realmResults, boolean automaticUpdate, boolean animateResults) {
+    public TaskListAdapter(Context context, ChangeTaskStatusListener changeTaskStatusListener, Realm realm, RealmResults<Task> realmResults, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         this.realm = realm;
         this.changeTaskStatusListener = changeTaskStatusListener;
@@ -38,26 +40,37 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         ((ViewHolderTask) holder).clear();
     }
 
+    /*
+       Создание ViewHolder
+     */
     @Override
     public ViewHolderTask onCreateRealmViewHolder(ViewGroup viewGroup, int i) {
         View v = inflater.inflate(R.layout.task_item_view, viewGroup, false);
         return new ViewHolderTask(v);
     }
 
+    /*
+       Биндинг содержимого обьекта задания в вьюшку
+     */
     @Override
     public void onBindRealmViewHolder(ViewHolderTask viewHolderTask, int position) {
         viewHolderTask.bind(realmResults.get(position));
     }
 
+    /*
+       При свайпе в сторону будет происходить вызов удаления задания
+     */
     @Override
     public void onItemSwipedDismiss(int position) {
         super.onItemSwipedDismiss(position);
         changeTaskStatusListener.taskDelete();
     }
 
-    public interface ChangeTaskStatusListener {
-        void statusChanged(boolean status);
 
+    public interface ChangeTaskStatusListener {
+        //Изменение состояния задания
+        void statusChanged(boolean status);
+        //Удаление задания
         void taskDelete();
     }
 
@@ -72,6 +85,12 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     }
 
     class ViewHolderTask extends BaseViewHolder {
+
+        /*
+         * @BindView, @OnClick etc... это аннотации библиотеки Butterknife
+         * Butterknife позволяет уменьшить количество кода за счет кодогенерации на этапе сборки
+         * проекта.
+         */
 
         @BindView(R.id.title_text_task_item_view)
         TextView titleTextView;
@@ -88,9 +107,11 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
 
         ViewHolderTask(View itemView) {
             super(itemView);
+            //Подключение ButterKnife
             ButterKnife.bind(this, itemView);
         }
 
+        //Очистка ViewHolder
         @Override
         void clear() {
             titleTextView.setText("");
@@ -99,7 +120,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
             changeStatusButton.setOnCheckedChangeListener(null);
             changeStatusButton.setChecked(false);
         }
-
+        //Биндинг содержимого task во ViewHolder
         @Override
         void bind(final Task task) {
             ((CardView) itemView).setCardBackgroundColor(task.getColor());
@@ -111,6 +132,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
             changeStatusButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, final boolean status) {
+                    //Посылаем колбек на изменение статуса задания и меняем статус обьекта в задании
                     changeTaskStatusListener.statusChanged(status);
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override

@@ -23,6 +23,13 @@ import name.sportivka.mvpdiexample.R;
 
 public class CreateTaskFragment extends DialogFragment {
 
+    /*
+     * @BindView, @OnClick etc... это аннотации библиотеки Butterknife
+     * Butterknife позволяет уменьшить количество кода за счет кодогенерации на этапе сборки
+     * проекта.
+     * В классе BaseActivity описано подключение и отключение библиотеки.
+     */
+
     @BindView(R.id.title_task_edit_text)
     EditText titleEditText;
 
@@ -37,14 +44,18 @@ public class CreateTaskFragment extends DialogFragment {
 
     private OnCreateDialogListener onCreateDialogListener;
 
+    //При нажатии кнопки создания задания
     @OnClick(R.id.create_task_button)
     public void onCreateTaskButtonClick() {
+        //Получаем данные полей
         boolean cancel = false;
         String title = titleEditText.getText().toString();
         String body = bodyEditText.getText().toString();
         View focusView = null;
         titleEditText.setError(null);
         bodyEditText.setError(null);
+
+        //Проверка полей на их заполненность
 
         if (TextUtils.isEmpty(title)) {
             titleEditText.setError(getString(R.string.error_empty_field));
@@ -62,7 +73,10 @@ public class CreateTaskFragment extends DialogFragment {
                 focusView.requestFocus();
             return;
         }
+
+        //Если все хорошо, отправляем колбек на запись задания.
         onCreateDialogListener.onTaskCreated(title, body, colorSeekBar.getColor());
+        //Закрываем диалог
         getDialog().dismiss();
     }
 
@@ -72,10 +86,11 @@ public class CreateTaskFragment extends DialogFragment {
         dialog.setTitle(R.string.create);
         return dialog;
     }
-
+    //Создание вьшки диалога
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().setTitle(R.string.create);
+        //Отображаем клавиатуру при отображении диалога
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         View view = inflater.inflate(R.layout.create_task_dialog, null);
         ButterKnife.bind(this, view);
