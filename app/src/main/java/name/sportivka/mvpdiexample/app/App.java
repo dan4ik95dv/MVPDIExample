@@ -23,9 +23,16 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        /*
+        * Инициализация Инструментов отладки Realm базы
+        * Вызов консоли осуществляется с помощью доступа через chrome* браузер
+        * chrome://inspect
+        */
         initDebugTools();
+
+        //Инициализация NoSQL Realm базы
         initRealm();
+
 
     }
 
@@ -54,6 +61,8 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        //Подключение библиотеки для расширения количества методов в приложении
+        //Смотреть "проблема 65k методов dex"
         MultiDex.install(this);
     }
 

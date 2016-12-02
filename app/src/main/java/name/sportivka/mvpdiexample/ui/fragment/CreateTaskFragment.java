@@ -23,6 +23,12 @@ import name.sportivka.mvpdiexample.R;
 
 public class CreateTaskFragment extends DialogFragment {
 
+    /*
+     * @BindView, @OnClick etc... это аннотации библиотеки Butterknife
+     * Butterknife позволяет уменьшить количество кода за счет кодогенерации на этапе сборки
+     * проекта.
+     * В классе BaseActivity описано подключение и отключение библиотеки.
+     */
     @BindView(R.id.title_task_edit_text)
     EditText titleEditText;
 
@@ -37,12 +43,15 @@ public class CreateTaskFragment extends DialogFragment {
 
     private OnCreateDialogListener onCreateDialogListener;
 
+    //При нажатии кнопки создания задания
     @OnClick(R.id.create_task_button)
     public void onCreateTaskButtonClick() {
+        //Получаем данные полей
         if (attemptCreateTask()) return;
         getDialog().dismiss();
     }
 
+    //Проверка полей на их заполненность
     private boolean attemptCreateTask() {
         boolean cancel = false;
         String title = titleEditText.getText().toString();
@@ -67,6 +76,7 @@ public class CreateTaskFragment extends DialogFragment {
                 focusView.requestFocus();
             return true;
         }
+        //Отправляем событие на создание таска
         onCreateDialogListener.onTaskCreated(title, body, colorSeekBar.getColor());
         return false;
     }

@@ -35,12 +35,14 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
         attachView((MainMvpView) context);
     }
 
+    //При аттаче инициализируем презентер.
     @Override
     public void attachView(MainMvpView view) {
         this.mainMvpView = view;
         init();
     }
 
+    //При дестрое активности закрываем realm
     @Override
     public void detachView() {
         this.mainMvpView = null;
@@ -48,24 +50,37 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
         realm = null;
     }
 
+    /*
+        Инициализируем realm db и адаптер
+     */
     private void init() {
         initRealm();
         taskListAdapter = new TaskListAdapter(context, this, realm, tasks, true, true);
     }
 
+    /*
+       Подключаем realm и получаем список активных задач
+    */
     private void initRealm() {
         realm = Realm.getDefaultInstance();
         getTasks(false);
     }
 
-
+    /*
+       Получение списка заданий
+     */
     private void getTasks(boolean status) {
+        //Запроса получения списка заданий по статусу задания и сортировкой по дате создания
         tasks = realm.where(Task.class).equalTo("status", status).findAllSorted("dateCreated", Sort.DESCENDING);
         if (taskListAdapter != null) {
+            //Обновить список обьектов в адаптере
             taskListAdapter.updateRealmResults(tasks);
         }
     }
 
+    /*
+       Процедура создания записи задания в бд.
+    */
     private void createTask(final String title, final String body, final int color) {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -104,10 +119,10 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     switch (tab.getPosition()) {
-                        case 0:
+                        case 0: //Активные
                             getTasks(false);
                             break;
-                        case 1:
+                        case 1: //Завершенные
                             getTasks(true);
                             break;
                     }
@@ -133,6 +148,7 @@ public class MainPresenter implements Presenter<MainMvpView>, TaskListAdapter.Ch
             createDialogListener = new CreateTaskFragment.OnCreateDialogListener() {
                 @Override
                 public void onTaskCreated(String title, String body, Integer color) {
+                    //Создаем задание
                     createTask(title, body, color);
                 }
             };

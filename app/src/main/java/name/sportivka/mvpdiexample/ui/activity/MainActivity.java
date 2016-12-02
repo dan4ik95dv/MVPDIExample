@@ -20,6 +20,12 @@ import name.sportivka.mvpdiexample.util.Constants;
 
 public class MainActivity extends BaseActivity implements MainMvpView {
 
+    /*
+     * @BindView, @OnClick etc... это аннотации библиотеки Butterknife
+     * Butterknife позволяет уменьшить количество кода за счет кодогенерации на этапе сборки
+     * проекта.
+     * В классе BaseActivity описано подключение и отключение библиотеки.
+     */
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mainView;
 
@@ -35,14 +41,16 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @BindView(R.id.tab_layout)
     TabLayout tabLayout;
 
+    //Наш презентер
     private MainPresenter mainPresenter;
 
-
+    //При нажатии на кнопку добавления задания (Floating Action Button)
     @OnClick(R.id.fab)
     void addTaskClick() {
         showCreateTaskDialog();
     }
 
+    //Отображение диалога создания задания.
     private void showCreateTaskDialog() {
         CreateTaskFragment createTaskDialog = new CreateTaskFragment();
         createTaskDialog.setOnDialogResultListener(mainPresenter.getOnCreateDialogListener());
@@ -55,9 +63,10 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Инициализация презентера
         mainPresenter = new MainPresenter(this);
 
-
+        //Инициализируем toolbar и RecyclerView
         setSupportActionBar(toolbar);
         taskList.setAdapter(mainPresenter.getTaskListAdapter());
         tabLayout.addOnTabSelectedListener(mainPresenter.getTabSelectedListener());
@@ -86,17 +95,25 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         mainPresenter.detachView();
         super.onDestroy();
     }
-
+    /*
+    * Событие при изменении статуса задания
+    */
     @Override
     public void taskStatusChanged(boolean status) {
         Snackbar.make(mainView, status ? R.string.task_completed_msg : R.string.task_reopened_msg, Snackbar.LENGTH_SHORT).show();
     }
 
+    /*
+    * Событие при удалении задания
+    */
     @Override
     public void taskDeleted() {
         Snackbar.make(mainView, R.string.task_deleted_msg, Snackbar.LENGTH_SHORT).show();
     }
 
+    /*
+    * Событие при добавлении задания
+    */
     @Override
     public void taskAdded() {
         Snackbar.make(mainView, R.string.task_add_msg, Snackbar.LENGTH_SHORT).show();
