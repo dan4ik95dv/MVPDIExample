@@ -20,14 +20,15 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
+        //Подключаем аннотированные ui-компоненты
         unbinder = ButterKnife.bind(this);
     }
 
 
     @Override
     protected void onDestroy() {
+        //Отбиндиваем аннотированные ui-компоненты
         unbinder.unbind();
-
         super.onDestroy();
     }
 
